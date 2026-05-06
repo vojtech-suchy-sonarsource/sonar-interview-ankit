@@ -1,8 +1,12 @@
 package com.sonarsource.cinema;
 
+import java.util.logging.Logger;
+
 public class Main {
+  private static final Logger logger = Logger.getLogger(Main.class.getName());
+
   public static void main(String[] args) {
-    System.out.println("Welcome to SonarSource Cinema!");
+    logger.info("Welcome to SonarSource Cinema!");
     printMovies();
   }
 
