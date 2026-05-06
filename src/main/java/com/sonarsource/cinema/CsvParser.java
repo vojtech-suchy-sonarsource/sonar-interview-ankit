@@ -10,19 +10,24 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CsvParser {
+
+  private static final Logger logger = Logger.getLogger(CsvParser.class.getName());
 
   public Object parseCsv(String csvUrl) {
     InputStreamReader streamReader = getStreamReader(csvUrl);
     try (CSVReader csvReader = new CSVReaderBuilder(streamReader).withSkipLines(1).withCSVParser(getCsvParser()).build()) {
       String[] values;
       while ((values = csvReader.readNext()) != null) {
-        System.out.println(Arrays.toString(values));
+        String[] currentValues = values;
+        logger.log(Level.INFO, () -> Arrays.toString(currentValues));
       }
       return "Parsing completed successfully";
     } catch (IOException | CsvValidationException e) {
-      throw new RuntimeException(e);
+      throw new CsvParsingException("Failed to parse CSV", e);
     }
   }
 
@@ -30,7 +35,7 @@ public class CsvParser {
     try {
       return new InputStreamReader(new URL(csvUrl).openStream(), StandardCharsets.UTF_8);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new CsvParsingException("Failed to open CSV stream from URL: " + csvUrl, e);
     }
   }
 
